@@ -14,13 +14,20 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <junit.version>5.6.2</junit.version>
-    <logback.version>1.2.3</logback.version>
+    <slf4j-simple.version>1.7.30</slf4j-simple.version>
     <selenium-java.version>3.141.59</selenium-java.version>
     <webdrivermanager.version>3.8.1</webdrivermanager.version>
     <hamcrest.version>2.2</hamcrest.version>
+    <allure-junit5.version>2.13.7</allure-junit5.version>
+    <aspectj.version>1.8.10</aspectj.version>
+    <maven-surefire.version>2.22.0</maven-surefire.version>
+    <maven-site.version>3.7.1</maven-site.version>
+    <allure-maven.version>2.10.0</allure-maven.version>
+    <report.version>2.4.1</report.version>
+    <junit-platform-surefire-provider.version>1.1.0</junit-platform-surefire-provider.version>
   </properties>
 
   <dependencies>
@@ -29,12 +36,27 @@
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-console-standalone</artifactId>
+      <version>1.6.2</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <version>5.7.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j-simple.version}</version>
       <scope>test</scope>
     </dependency>
 
@@ -57,28 +79,57 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>io.qameta.allure</groupId>
+      <artifactId>allure-junit5</artifactId>
+      <version>${allure-junit5.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
+          <version>${maven-site.version}</version>
         </plugin>
         <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>3.0.0-M5</version>
+          <version>${maven-surefire.version}</version>
+          <configuration>
+            <testFailureIgnore>true</testFailureIgnore>
+            <includes>
+              <include>EditProfileTes.java</include>
+              <include>LogOutTes.java</include>
+              <include>SearchTes.java</include>
+              <include>LoginFailedTest</include>
+            </includes>
+            <argLine>
+              -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+            </argLine>
+            <systemProperties>
+              <property>
+                <name>allure.results.directory</name>
+                <value>${project.build.directory}/allure-results</value>
+              </property>
+            </systemProperties>
+          </configuration>
+          <dependencies>
+            <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>2.12</version>
+          <groupId>io.qameta.allure</groupId>
+          <artifactId>allure-maven</artifactId>
+          <version>${allure-maven.version}</version>
+          <configuration>
+            <reportVersion>${report.version}</reportVersion>
+          </configuration>
         </plugin>
       </plugins>
-    </pluginManagement>
   </build>
 </project>
